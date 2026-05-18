@@ -193,9 +193,9 @@ test.describe('Full Flow Regression Suite', () => {
     await test.step('🔐 Login to Planning Application', async () => {
       Logger.info('Logging into application');
 
-      await loginPage.navigate();
+      await loginPage.navigateToPlanning();
       //   await page.waitForLoadState('networkidle');
-      await loginPage.login();
+      await loginPage.loginToPlanning();
 
       Logger.success('Login successful');
     });
