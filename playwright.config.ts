@@ -19,7 +19,7 @@ export default defineConfig({
 
   globalSetup: require.resolve('./global-setup'),
   use: {
-
+    
     actionTimeout: 15000,
     navigationTimeout: 30000,
 
