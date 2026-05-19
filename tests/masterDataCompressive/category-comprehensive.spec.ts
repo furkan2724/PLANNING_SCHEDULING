@@ -6,10 +6,18 @@ test.describe('Category Management - Comprehensive Test Suite', () => {
 
   // ================= HAPPY PATH TESTS =================
 
-  test('✅ Happy Path: Create Category with all fields', async ({ categoryPage, page }) => {
+  test('✅ Happy Path: Create Category with all fields', async ({ categoryPage, page, loginPage }) => {
     const categoryName = DataGenerator.getCategoryName();
     const categoryDesc = DataGenerator.getDescription();
 
+    // Logger.info('Logging into MDM application');
+
+    //   await loginPage.navigateToMDM();
+
+    //   await loginPage.loginToMDM();
+
+    //   Logger.success('MDM Login successful');
+      
     await test.step('Navigate to Category Page', async () => {
       await categoryPage.navigate();
       await page.waitForLoadState('networkidle');

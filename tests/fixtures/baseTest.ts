@@ -1,5 +1,5 @@
+import fs from 'fs';
 import { test as base } from '@playwright/test';
-
 import { CategoryPage } from '../../pages/category.page';
 import { ProductPage } from '../../pages/product.page';
 import { ResourcePage } from '../../pages/resource.page';
@@ -23,6 +23,25 @@ type MyFixtures = {
 };
 
 export const test = base.extend<MyFixtures>({
+   page: async ({ page }, use) => {
+
+    const sessionPath = 'playwright/.auth/session.json';
+
+    if (fs.existsSync(sessionPath)) {
+
+      const sessionData = JSON.parse(
+        fs.readFileSync(sessionPath, 'utf-8')
+      );
+
+      await page.addInitScript(storage => {
+        for (const [key, value] of Object.entries(storage)) {
+          window.sessionStorage.setItem(key, value as string);
+        }
+      }, sessionData);
+    }
+
+    await use(page);
+  },
   categoryPage: async ({ page }, use) => {
     await use(new CategoryPage(page));
   },
