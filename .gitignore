@@ -1,10 +1,16 @@
 
 # Playwright
-node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-/playwright/.auth/
-allure-results/ 
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Allure
+allure-results/
+allure-report/
+
+# Auth
 playwright/.auth/
+
+# Node
+node_modules/
