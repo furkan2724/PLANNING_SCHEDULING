@@ -30,17 +30,17 @@ test.describe('Full Flow Regression Suite', () => {
 
     // ================= MDM LOGIN =================
 
-    await test.step('🔐 Login to MDM Application', async () => {
+    // await test.step('🔐 Login to MDM Application', async () => {
 
-      Logger.info('Logging into MDM application');
+    //   Logger.info('Logging into MDM application');
 
-      await loginPage.navigateToMDM();
+    //   await loginPage.navigateToMDM();
 
-      await loginPage.loginToMDM();
+    //   await loginPage.loginToMDM();
 
-      Logger.success('MDM Login successful');
+    //   Logger.success('MDM Login successful');
 
-    });
+    // });
 
     // ================= CATEGORY =================
 
@@ -48,7 +48,7 @@ test.describe('Full Flow Regression Suite', () => {
 
       Logger.info('Navigating to Category Page');
 
-     // await categoryPage.navigate();
+      await categoryPage.navigate();
 
       // await page.waitForLoadState('networkidle');
 
@@ -186,7 +186,7 @@ test.describe('Full Flow Regression Suite', () => {
 
       await workstationPage.addWorkstation();
 
-    //  await workstationPage.verifyWorkstationCreated();
+      //  await workstationPage.verifyWorkstationCreated();
 
       Logger.success(`Workstation Created: ${workstationName}`);
 

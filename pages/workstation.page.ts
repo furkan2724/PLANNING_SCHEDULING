@@ -31,7 +31,7 @@ export class WorkstationPage {
 
   async selectSubInventory() {
     await this.page.getByRole('button', { name: 'Select Sub Inventory' }).click();
-    await this.page.getByRole('option', { name: 'RM_STORE - RM_STORE' }).click();
+    await this.page.getByRole('option', { name: 'SUB00001 - RM_STORE' }).click();
   }
 
   async addWorkstation() {

@@ -29,7 +29,7 @@ export class DemandPage {
       .click();
 
     await expect(
-      this.page.getByText('Please select a product.')
+      this.page.getByText('Product is required.')
     ).toBeVisible();
   }
 

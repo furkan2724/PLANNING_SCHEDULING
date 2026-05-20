@@ -1,4 +1,4 @@
-import { test } from '../fixtures/baseTest';
+import { test, expect } from '../fixtures/baseTest';
 import { Logger } from '../../utils/logger';
 import { DataGenerator } from '../../utils/dataGenerator';
 
@@ -92,7 +92,8 @@ test.describe('Category Management - Comprehensive Test Suite', () => {
         .getByRole('button', { name: 'Add Category' }).click();
       
       // Verify error message appears
-      await page.waitForSelector('[id*="name-error"], text="required"', { timeout: 5000 });
+    //  await page.waitForSelector('[id*="name-error"], text="required"', { timeout: 5000 });
+      await expect(page.getByText('Category name is required')).toBeVisible();
       Logger.success('Form validation error triggered');
     });
   });
@@ -100,9 +101,9 @@ test.describe('Category Management - Comprehensive Test Suite', () => {
   test('❌ Negative: Category name with special characters', async ({ categoryPage, page }) => {
     const invalidNames = [
       '@#$%^&*()',
-      '<script>alert("xss")</script>',
-      'Category™',
-      'Test\n\nNewline',
+      `<script>alert("xss")</script> ${Date.now()}`,
+      `Category™ ${Date.now()}`,
+      `Test\n\nNewline ${Date.now()}`,
     ];
 
     for (const invalidName of invalidNames) {
@@ -195,35 +196,71 @@ test.describe('Category Management - Comprehensive Test Suite', () => {
 
   // ================= BOUNDARY TESTS =================
 
-  test('🔲 Boundary: Create category with single character name', async ({ categoryPage, page }) => {
-    const singleCharName = 'A';
-    
-    await test.step('Navigate and create single char category', async () => {
-      await categoryPage.navigate();
-      await categoryPage.clickAddCategory();
-      await categoryPage.addCategory(singleCharName, 'Single character', 'test-data/test.png');
-      Logger.success('Single character category created');
-    });
+test('🔲 Boundary: Category name less than minimum length', async ({ categoryPage, page }) => {
 
-    await test.step('Verify creation', async () => {
-      await categoryPage.verifyCategoryCreated(singleCharName);
-      Logger.success('Single character category verified');
-    });
+  const invalidName = 'A';
+
+  await test.step('Navigate and enter invalid short category name', async () => {
+
+    await categoryPage.navigate();
+    await categoryPage.clickAddCategory();
+
+    await page.getByRole('textbox', { name: 'Category Name*' })
+      .fill(invalidName);
+
+    await page.getByRole('textbox', { name: 'Category description' })
+      .fill('Invalid short name test');
+
+    await page.getByLabel('Add New Category')
+      .getByRole('button', { name: 'Add Category' })
+      .click();
+
+    Logger.info('Entered category name with less than 3 characters');
   });
 
-  test('🔲 Boundary: Category name with numbers and symbols only', async ({ categoryPage, page }) => {
-    const numericName = DataGenerator.getRandomNumber(1000, 9999).toString();
-    
-    await test.step('Create numeric category', async () => {
-      await categoryPage.navigate();
-      await categoryPage.clickAddCategory();
-      await categoryPage.addCategory(numericName, '', 'test-data/test.png');
-      Logger.success(`Numeric category created: ${numericName}`);
-    });
+  await test.step('Verify minimum length validation message', async () => {
+
+    await expect(
+      page.getByText('Category name must be at least 3 characters')
+    ).toBeVisible();
+
+    Logger.success('Minimum character validation verified');
   });
+
+});
+
+ test('🔲 Boundary: Category name with numbers only', async ({ categoryPage, page }) => {
+
+  const numericName = DataGenerator.getRandomNumber(1000, 9999).toString();
+
+  await test.step('Navigate and enter numeric category name', async () => {
+
+    await categoryPage.navigate();
+    await categoryPage.clickAddCategory();
+
+    await page.getByRole('textbox', { name: 'Category Name*' })
+      .fill(numericName);
+
+    await page.getByLabel('Add New Category')
+      .getByRole('button', { name: 'Add Category' })
+      .click();
+
+    Logger.info(`Entered numeric category name: ${numericName}`);
+  });
+
+  await test.step('Verify validation message', async () => {
+
+    await expect(
+      page.getByText('Category name must include at least one letter')
+    ).toBeVisible();
+
+    Logger.success('Numeric-only category name validation verified');
+  });
+
+});
 
   test('🔲 Boundary: Category name with spaces and accents', async ({ categoryPage, page }) => {
-    const accentName = 'Café Españöl Théâtre';
+    const accentName = `Café Españöl Théâtre ${Date.now()}`;
     
     await test.step('Navigate and create with accented name', async () => {
       await categoryPage.navigate();
