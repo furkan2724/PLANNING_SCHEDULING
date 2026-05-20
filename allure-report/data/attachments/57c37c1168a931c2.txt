@@ -1,3 +1,0 @@
-[SUCCESS] Category Created: CategoryAutomotivevzq
-[SUCCESS] Category Updated: CategoryAutomotivevzq
-[SUCCESS] Update Verified: CategoryAutomotivevzq

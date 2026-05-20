@@ -1,2 +1,0 @@
-[SUCCESS] Category Created with minimal fields: CategoryKids6z9
-[SUCCESS] Minimal Category Verified
