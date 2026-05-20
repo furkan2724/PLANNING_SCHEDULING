@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2399","❌ Negative: Cannot create category without name","chromium","2026-05-20","passed","2026-05-20","Category Management - Comprehensive Test Suite","masterDataCompressive\category-comprehensive.spec.ts","",""
+"","4065","✅ Happy Path: Create Category with minimum fields","chromium","2026-05-20","passed","2026-05-20","Category Management - Comprehensive Test Suite","masterDataCompressive\category-comprehensive.spec.ts","",""
+"","5998","✅ Happy Path: Update Category","chromium","2026-05-20","passed","2026-05-20","Category Management - Comprehensive Test Suite","masterDataCompressive\category-comprehensive.spec.ts","",""
+"","8977","✅ Happy Path: Create Category with all fields","chromium","2026-05-20","passed","2026-05-20","Category Management - Comprehensive Test Suite","masterDataCompressive\category-comprehensive.spec.ts","",""
