@@ -1,3 +1,0 @@
-[INFO] Navigated to Category Page
-[SUCCESS] Category Created: CategoryKidsdho
-[SUCCESS] Category Verified: CategoryKidsdho

@@ -29,7 +29,7 @@ export class LoginPage {
     await this.loginButton().click();
 
     // Add proper validation after login
-    await this.page.waitForLoadState('networkidle');
+  //  await this.page.waitForLoadState('networkidle');
   }
 
   // ================= PLANNING =================

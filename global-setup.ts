@@ -1,19 +1,53 @@
 import fs from 'fs';
+import path from 'path';
 import { chromium } from '@playwright/test';
 import { LoginPage } from './pages/login.page';
 
 async function globalSetup() {
 
-  // Clean reports
-  if (fs.existsSync('allure-results')) {
-    fs.rmSync('allure-results', { recursive: true, force: true });
+  // ================= CLEAN ALLURE RESULTS =================
+
+  const allureResultsPath = 'allure-results';
+
+  if (fs.existsSync(allureResultsPath)) {
+
+    const preserveItems = [
+      'environment.properties',
+      'executor.json',
+      'history'
+    ];
+
+    fs.readdirSync(allureResultsPath).forEach(item => {
+
+      if (!preserveItems.includes(item)) {
+
+        fs.rmSync(
+          path.join(allureResultsPath, item),
+          { recursive: true, force: true }
+        );
+
+      }
+
+    });
+
+  } else {
+
+    fs.mkdirSync(allureResultsPath, { recursive: true });
+
   }
 
+  // ================= CLEAN OLD REPORT =================
+
   if (fs.existsSync('allure-report')) {
-    fs.rmSync('allure-report', { recursive: true, force: true });
+    fs.rmSync('allure-report', {
+      recursive: true,
+      force: true
+    });
   }
 
   console.log('✅ Cleaned old Allure reports');
+
+  // ================= LOGIN =================
 
   const browser = await chromium.launch({
     headless: false,
@@ -24,6 +58,7 @@ async function globalSetup() {
   const loginPage = new LoginPage(page);
 
   await loginPage.navigateToMDM();
+
   await loginPage.loginToMDM();
 
   await page.waitForLoadState('networkidle');
@@ -32,22 +67,28 @@ async function globalSetup() {
 
   console.log('Current URL:', await page.url());
 
-  // SAVE SESSION STORAGE
+  // ================= SAVE SESSION STORAGE =================
+
   const sessionStorage = await page.evaluate(() => {
+
     const json: Record<string, string> = {};
 
     for (let i = 0; i < window.sessionStorage.length; i++) {
+
       const key = window.sessionStorage.key(i);
 
       if (key) {
         json[key] = window.sessionStorage.getItem(key) || '';
       }
+
     }
 
     return json;
+
   });
 
-  // Create auth folder
+  // ================= CREATE AUTH FOLDER =================
+
   fs.mkdirSync('playwright/.auth', { recursive: true });
 
   fs.writeFileSync(
