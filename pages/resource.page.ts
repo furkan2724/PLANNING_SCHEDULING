@@ -4,7 +4,7 @@ export class ResourcePage {
   constructor(private page: Page) {}
 
   async navigate() {
-    // await this.page.goto('https://mdm-test.c4i4.org/master-data/resources-capacity');
+     await this.page.goto('https://mdm-test.c4i4.org/master-data/resources-capacity');
     // await this.page.getByRole('button', { name: 'Go to dashboard' }).click();
     await this.page.getByRole('button', { name: 'Resources & Capacity' }).click();
   }

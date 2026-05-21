@@ -4,6 +4,7 @@ export class WorkstationPage {
   constructor(private page: Page) { }
 
   async goToWorkstationSection() {
+    await this.page.goto('https://mdm-test.c4i4.org/master-data/workstations');
     await this.page.getByRole('button', { name: 'Workstations' }).click();
   }
 

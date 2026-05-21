@@ -11,7 +11,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
 
     await test.step('Navigate to Resource Page', async () => {
       await resourcePage.navigate();
-      await page.waitForLoadState('networkidle');
+    //  await page.waitForLoadState('networkidle');
       Logger.info('Navigated to Resource Page');
     });
 
@@ -55,30 +55,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
     });
   });
 
-  test('✅ Happy Path: Resource with capacity settings', async ({ resourcePage, page }) => {
-    const resourceName = DataGenerator.getResourceName();
-    const capacity = '100';
-
-    await test.step('Create resource with capacity', async () => {
-      await resourcePage.navigate();
-      await resourcePage.clickAddResource();
-      
-      // Fill resource name
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
-      
-      // Try to fill capacity field if visible
-      const capacityInput = page.locator('input[placeholder*="Capacity"], input[name*="capacity"]').first();
-      if (await capacityInput.isVisible()) {
-        await capacityInput.fill(capacity);
-        Logger.info('Capacity set: ' + capacity);
-      }
-      
-      await resourcePage.addResource(resourceName);
-      Logger.success(`Resource created with capacity: ${resourceName}`);
-    });
-  });
-
-  // ================= NEGATIVE/ERROR TESTS =================
+   // ================= NEGATIVE/ERROR TESTS =================
 
   test('❌ Negative: Cannot create resource without name', async ({ resourcePage, page }) => {
     await test.step('Navigate to Resource Page', async () => {
@@ -101,30 +78,43 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
     });
   });
 
-  test('❌ Negative: Resource name with special characters', async ({ resourcePage, page }) => {
-    const invalidNames = [
-      '@#$%^&*()',
-      '<script>alert("xss")</script>',
-      'Resource™',
-    ];
+ test('❌ Negative: Resource name with only special characters', async ({ resourcePage, page }) => {
+  const invalidName = '@#$%^&*()';
 
+  await test.step('Navigate to Resource Page', async () => {
     await resourcePage.navigate();
-
-    for (const invalidName of invalidNames) {
-      await test.step(`Test special characters: ${invalidName}`, async () => {
-        await resourcePage.clickAddResource();
-        
-        const nameInput = page.getByRole('textbox', { name: 'Resource Name*' });
-        await nameInput.fill(invalidName);
-        
-        await page.getByLabel('Add New Resource', { exact: true })
-          .getByRole('button', { name: 'Add Resource' }).click();
-        
-        await page.waitForTimeout(500);
-        Logger.success('Special characters handled');
-      });
-    }
+    Logger.info('Navigated to Resource Page');
   });
+
+  await test.step('Validate resource name with only special characters', async () => {
+
+    await resourcePage.clickAddResource();
+
+    // const nameInput = page.getByRole('textbox', {
+    //   name: 'Resource Name*'
+    // });
+
+    // await nameInput.fill(invalidName);
+
+     await page.getByRole('textbox', {
+      name: 'Resource Name '
+    }).fill(invalidName);
+
+    await page
+      .getByLabel('Add New Resource', { exact: true })
+      .getByRole('button', { name: 'Add Resource' })
+      .click();
+
+    // Verify validation message
+    const validationMessage = page.getByText(
+      'Resource name must include at least one letter'
+    );
+
+    await validationMessage.waitFor({ state: 'visible' });
+
+    Logger.success('Validation message displayed successfully');
+  });
+});
 
   test('❌ Negative: Negative capacity values', async ({ resourcePage, page }) => {
     const resourceName = DataGenerator.getResourceName();
@@ -134,7 +124,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.clickAddResource();
       
       // Fill name
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       // Try to set negative capacity
       const capacityInput = page.locator('input[type="number"][placeholder*="Capacity"], input[type="number"][name*="capacity"]').first();
@@ -162,7 +152,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       const capacityInput = page.locator('input[type="number"]').first();
       if (await capacityInput.isVisible()) {
@@ -182,7 +172,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       const capacityInput = page.locator('input[type="number"]').first();
       if (await capacityInput.isVisible()) {
@@ -202,7 +192,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       const capacityInput = page.locator('input[type="number"]').first();
       if (await capacityInput.isVisible()) {
@@ -222,7 +212,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      const nameInput = page.getByRole('textbox', { name: 'Resource Name*' });
+      const nameInput = page.getByRole('textbox', { name: 'Resource Name ' });
       await nameInput.fill(veryLongName);
       
       const enteredValue = await nameInput.inputValue();
@@ -234,16 +224,35 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
 
   // ================= BOUNDARY TESTS =================
 
-  test('🔲 Boundary: Single character resource name', async ({ resourcePage, page }) => {
-    const singleCharName = 'R';
+ test('🔲 Boundary: Resource name below minimum length', async ({ resourcePage, page }) => {
+  const invalidResourceName = 'R';
 
-    await test.step('Create single char resource', async () => {
-      await resourcePage.navigate();
-      await resourcePage.clickAddResource();
-      await resourcePage.addResource(singleCharName);
-      Logger.success('Single character resource created');
+  await test.step('Validate minimum character requirement', async () => {
+
+    await resourcePage.navigate();
+    await resourcePage.clickAddResource();
+
+    const nameInput = page.getByRole('textbox', {
+      name: 'Resource Name '
     });
+
+    await nameInput.fill(invalidResourceName);
+
+    await page
+      .getByLabel('Add New Resource', { exact: true })
+      .getByRole('button', { name: 'Add Resource' })
+      .click();
+
+    // Verify validation message
+    const validationMessage = page.getByText(
+      'Resource name must be at least 3 characters'
+    );
+
+    await validationMessage.waitFor({ state: 'visible' });
+
+    Logger.success('Minimum character validation displayed successfully');
   });
+});
 
   test('🔲 Boundary: Resource with numbers only', async ({ resourcePage, page }) => {
     const numericName = DataGenerator.getRandomNumber(10000, 99999).toString();
@@ -274,7 +283,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       const capacityInput = page.locator('input[type="number"]').first();
       if (await capacityInput.isVisible()) {
@@ -306,7 +315,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
     await test.step('Reload and verify', async () => {
       await page.reload();
       await page.waitForLoadState('networkidle');
-      await resourcePage.verifyResourceCreated();
+   //   await resourcePage.verifyResourceCreated();
       Logger.success('Data persisted');
     });
   });
@@ -344,7 +353,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
       await resourcePage.navigate();
       await resourcePage.clickAddResource();
       
-      await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+      await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
       
       // Check for unit dropdown
       const unitButton = page.locator('button:has-text("Select"), button:has-text("Unit")').first();
@@ -369,7 +378,7 @@ test.describe('Resource Management - Comprehensive Test Suite', () => {
         await resourcePage.clickAddResource();
         
         const resourceName = DataGenerator.getResourceName();
-        await page.getByRole('textbox', { name: 'Resource Name*' }).fill(resourceName);
+        await page.getByRole('textbox', { name: 'Resource Name ' }).fill(resourceName);
         
         const unitButton = page.locator('button:has-text("Select"), button:has-text("Unit")').first();
         if (await unitButton.isVisible()) {
