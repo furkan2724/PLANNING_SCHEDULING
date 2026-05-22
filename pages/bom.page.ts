@@ -4,8 +4,8 @@ export class BomPage {
   constructor(private page: Page) { }
 
   async navigateToBOM() {
-    // await this.page.goto('https://mdm-test.c4i4.org/master-data/category');
-    await this.page.getByRole('button', { name: 'BOM' }).click();
+     await this.page.goto('https://mdm-test.c4i4.org/master-data/bom-routing');
+   // await this.page.getByRole('button', { name: 'BOM' }).click();
     await expect(this.page.getByText('Bill of Materials (BOM)')).toBeVisible();
   }
 
