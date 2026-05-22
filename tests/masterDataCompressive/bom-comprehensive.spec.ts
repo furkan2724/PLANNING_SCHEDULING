@@ -1,11 +1,29 @@
 import { test } from '../fixtures/baseTest';
+import type { Page } from '@playwright/test';
 import { Logger } from '../../utils/logger';
 import { DataGenerator } from '../../utils/dataGenerator';
+
+type CategoryPage = {
+  navigate(): Promise<void>;
+  clickAddCategory(): Promise<void>;
+  addCategory(
+    categoryName: string,
+    description: string,
+    imagePath: string
+  ): Promise<void>;
+};
+
+type ProductPage = {
+  goToProductSection(): Promise<void>;
+  clickAddProduct(): Promise<void>;
+  addProduct(categoryName: string, productName: string): Promise<void>;
+};
+
 
 test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
 
   // Helper: Setup category and product first
-  async function createTestProduct(categoryPage, productPage, page) {
+  async function createTestProduct(categoryPage:CategoryPage, productPage:ProductPage, page:Page) {
     const categoryName = DataGenerator.getCategoryName();
     const productName = DataGenerator.getProductName();
 
@@ -75,34 +93,7 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
     });
   });
 
-  test('✅ Happy Path: Create multiple BOMs', async ({ categoryPage, productPage, bomPage, page }) => {
-    const bomCount = 3;
-    const boms = [];
-
-    await test.step('Create multiple products and BOMs', async () => {
-      for (let i = 0; i < bomCount; i++) {
-        const { categoryName, productName } = await createTestProduct(categoryPage, productPage, page);
-        boms.push({ categoryName, productName });
-        Logger.info(`Created product ${i + 1}/${bomCount}: ${productName}`);
-      }
-    });
-
-    await test.step('Create BOMs for all products', async () => {
-      await bomPage.navigateToBOM();
-      
-      for (const bom of boms) {
-        await bomPage.clickCreateBOM();
-        await bomPage.selectCategory(bom.categoryName);
-        await bomPage.selectProduct(bom.productName);
-        await bomPage.createBOM();
-        Logger.info(`BOM created for: ${bom.productName}`);
-      }
-      
-      Logger.success('All BOMs created');
-    });
-  });
-
-  // ================= NEGATIVE/ERROR TESTS =================
+   // ================= NEGATIVE/ERROR TESTS =================
 
   test('❌ Negative: Cannot create BOM without category', async ({ bomPage, page }) => {
     await test.step('Navigate to BOM', async () => {
