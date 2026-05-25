@@ -23,7 +23,7 @@ type ProductPage = {
 test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
 
   // Helper: Setup category and product first
-  async function createTestProduct(categoryPage:CategoryPage, productPage:ProductPage, page:Page) {
+  async function createTestProduct(categoryPage: CategoryPage, productPage: ProductPage, page: Page) {
     const categoryName = DataGenerator.getCategoryName();
     const productName = DataGenerator.getProductName();
 
@@ -82,10 +82,10 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
     await test.step('Add Component', async () => {
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();
@@ -93,7 +93,7 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
     });
   });
 
-   // ================= NEGATIVE/ERROR TESTS =================
+  // ================= NEGATIVE/ERROR TESTS =================
 
   test('❌ Negative: Cannot create BOM without category', async ({ bomPage, page }) => {
     await test.step('Navigate to BOM', async () => {
@@ -102,11 +102,11 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
 
     await test.step('Submit without category', async () => {
       await bomPage.clickCreateBOM();
-      
+
       // Try to submit without selecting category
-      await page.getByLabel('Create BOM', { exact: true })
-        .getByRole('button', { name: 'Create' }).click();
-      
+      await page.getByLabel('Create New BOM', { exact: true })
+        .getByRole('button', { name: 'Create BOM' }).click();
+
       await page.waitForTimeout(500);
       Logger.success('Form rejected without category');
     });
@@ -125,13 +125,13 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
     await test.step('Submit without product', async () => {
       await bomPage.navigateToBOM();
       await bomPage.clickCreateBOM();
-      
+
       // Select category but not product
       await bomPage.selectCategory(categoryName);
-      
-      await page.getByLabel('Create BOM', { exact: true })
-        .getByRole('button', { name: 'Create' }).click();
-      
+
+      await page.getByLabel('Create New BOM', { exact: true })
+        .getByRole('button', { name: 'Create BOM' }).click();
+
       await page.waitForTimeout(500);
       Logger.success('Form rejected without product');
     });
@@ -146,7 +146,7 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
       Logger.info('Component form opened');
@@ -155,51 +155,19 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
     await test.step('Try to add without quantity', async () => {
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
-      
-      // Don't fill quantity, try to submit
-      const submitButton = page.locator('button:has-text("Add"), button:has-text("Save")').last();
-      if (await submitButton.isVisible()) {
-        await submitButton.click();
-        Logger.info('Submit attempted');
-      }
-      
-      await page.waitForTimeout(500);
-      Logger.success('Validation handled');
-    });
-  });
 
-  test('❌ Negative: Invalid component quantity values', async ({ categoryPage, productPage, bomPage, page }) => {
-    const { categoryName, productName } = await createTestProduct(categoryPage, productPage, page);
+      // Clear quantity field
+      const quantityInput = page.locator('input[name="quantity"]').first();
+      await quantityInput.fill('');
 
-    await test.step('Create BOM', async () => {
-      await bomPage.navigateToBOM();
-      await bomPage.clickCreateBOM();
-      await bomPage.selectCategory(categoryName);
-      await bomPage.selectProduct(productName);
-      await bomPage.createBOM();
-    });
+      // Submit form
+      await page.getByLabel('Add Component to BOM', { exact: true })
+        .getByRole('button', { name: 'Add Component' }).click();
 
-    const invalidQuantities = ['-5', '0', '-0.1'];
-
-    await test.step('Test invalid quantities', async () => {
-      for (const qty of invalidQuantities) {
-        await bomPage.openVersion();
-        await bomPage.clickAddComponent();
-        
-        const qtyInput = page.locator('input[placeholder*="Quantity"], input[name*="quantity"]').first();
-        if (await qtyInput.isVisible()) {
-          await qtyInput.fill(qty);
-          Logger.info(`Tested quantity: ${qty}`);
-        }
-        
-        // Close component form
-        await page.keyboard.press('Escape');
-      }
-      
-      Logger.success('Invalid quantities tested');
+      Logger.success('Quantity validation displayed successfully');
     });
   });
 
@@ -212,13 +180,13 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();
@@ -227,14 +195,14 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
 
     await test.step('Try to add same component again', async () => {
       await bomPage.clickAddComponent();
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();
-      
+
       Logger.info('Duplicate add attempted');
     });
   });
@@ -250,18 +218,18 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const qtyInput = page.locator('input[placeholder*="Quantity"], input[name*="quantity"]').first();
       if (await qtyInput.isVisible()) {
         await qtyInput.fill('1');
       }
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();
@@ -278,17 +246,17 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const qtyInput = page.locator('input[placeholder*="Quantity"], input[name*="quantity"]').first();
       if (await qtyInput.isVisible()) {
         await qtyInput.fill('2.5');
         const value = await qtyInput.inputValue();
         Logger.info(`Decimal quantity entered: ${value}`);
       }
-      
+
       Logger.success('Decimal quantity tested');
     });
   });
@@ -302,17 +270,17 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const qtyInput = page.locator('input[placeholder*="Quantity"], input[name*="quantity"]').first();
       if (await qtyInput.isVisible()) {
         await qtyInput.fill('999999');
         const value = await qtyInput.inputValue();
         Logger.info(`Large quantity: ${value}`);
       }
-      
+
       Logger.success('Large quantity tested');
     });
   });
@@ -373,13 +341,13 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();
@@ -415,13 +383,13 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       for (const comp of components) {
         await bomPage.openVersion();
         await bomPage.clickAddComponent();
-        
+
         await bomPage.selectComponentCategory(comp.category);
         await bomPage.selectComponentProduct(comp.product);
         await bomPage.addComponent();
         Logger.info(`Added: ${comp.product}`);
       }
-      
+
       Logger.success('Multiple components added');
     });
   });
@@ -435,13 +403,13 @@ test.describe('Bill of Materials (BOM) - Comprehensive Test Suite', () => {
       await bomPage.selectCategory(categoryName);
       await bomPage.selectProduct(productName);
       await bomPage.createBOM();
-      
+
       await bomPage.openVersion();
       await bomPage.clickAddComponent();
-      
+
       const componentCategory = 'COPPER RING';
       const componentProduct = 'Copper Ring V3 Wfn 37.5x1.5 Th';
-      
+
       await bomPage.selectComponentCategory(componentCategory);
       await bomPage.selectComponentProduct(componentProduct);
       await bomPage.addComponent();

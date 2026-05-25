@@ -5,8 +5,8 @@ export class ProcessRoutingPage {
 
   // ================= NAVIGATION =================
   async navigate() {
-  //  await this.page.goto('https://mdm-test.c4i4.org/master-data/process-routing');
-    await this.page.getByRole('button', { name: 'Process Routing' }).click();
+    await this.page.goto('https://mdm-test.c4i4.org/master-data/process-routing');
+  //  await this.page.getByRole('button', { name: 'Process Routing' }).click();
     await expect(this.page.getByRole('main')).toContainText('Process Routing Visualization');
   }
 

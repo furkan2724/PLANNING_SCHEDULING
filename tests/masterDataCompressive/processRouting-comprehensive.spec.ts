@@ -1,11 +1,34 @@
 import { test } from '../fixtures/baseTest';
+import type { Page } from '@playwright/test';
 import { Logger } from '../../utils/logger';
 import { DataGenerator } from '../../utils/dataGenerator';
+
+type CategoryPage = {
+  navigate(): Promise<void>;
+  clickAddCategory(): Promise<void>;
+  addCategory(
+    categoryName: string,
+    description: string,
+    imagePath: string
+  ): Promise<void>;
+};
+
+type ProductPage = {
+  goToProductSection(): Promise<void>;
+  clickAddProduct(): Promise<void>;
+  addProduct(categoryName: string, productName: string): Promise<void>;
+};
+
+type ResourcePage = {
+  navigate(): Promise<void>;
+  clickAddResource(): Promise<void>;
+  addResource(resourceName: string): Promise<void>;
+};
 
 test.describe('Process Routing - Comprehensive Test Suite', () => {
 
   // Helper: Setup category, product, and resource
-  async function createTestSetup(categoryPage, productPage, resourcePage, page) {
+  async function createTestSetup(categoryPage:CategoryPage, productPage:ProductPage, resourcePage:ResourcePage, page: Page) {
     const categoryName = DataGenerator.getCategoryName();
     const productName = DataGenerator.getProductName();
     const resourceName = DataGenerator.getResourceName();
