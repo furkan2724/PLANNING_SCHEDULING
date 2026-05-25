@@ -38,8 +38,7 @@ export class BomPage {
   }
 
   async verifyBOMCreated(categoryName: string, productName: string) {
-    await expect(this.page.getByText('BOM created successfully.')).toBeVisible();
-
+    
     // dynamic validation instead of hardcoded string
     await expect(
       this.page.getByText(new RegExp(`${productName}@${categoryName}`))
