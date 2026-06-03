@@ -77,4 +77,16 @@ export class ProcessRoutingPage {
   async verifyRoutingUpdated() {
     await expect(this.page.getByText('Process routing updated')).toBeVisible();
   }
+
+  async addProcessRouting(
+  productName: string,
+  resourceName: string,
+  time: string | number
+) {
+  await this.clickAddRouting();
+  await this.selectProduct(productName);
+  await this.selectResource(resourceName);
+  await this.fillWorkstationTimes(time);
+  await this.submitRouting();
+}
 }
